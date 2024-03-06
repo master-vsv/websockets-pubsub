@@ -1,0 +1,31 @@
+version: '3.8'
+
+#name: iset-local
+
+x-labels: &network
+  networks:
+    - iset
+
+services:
+ 
+  redis:
+    image: bitnami/redis:7.2.4
+    container_name: redis-local
+    hostname: redis-local
+    ports:
+      - 6379:6379
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_AOF_ENABLED=no
+    volumes:
+      - redis:/bitnami/redis/data
+    <<: *network
+
+volumes:
+  redis:
+    name: redis-local
+
+networks:
+  iset:
+    name: iset-local
