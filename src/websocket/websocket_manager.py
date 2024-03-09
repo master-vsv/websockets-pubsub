@@ -3,7 +3,7 @@ import asyncio
 import json
 from fastapi import WebSocket
 from src.redis.redis_pubsub_manager import RedisPubSubManager
-
+from src.redis.redis_connect import RedisConnect
 
 class WebSocketManager:
 
@@ -16,7 +16,7 @@ class WebSocketManager:
             pubsub_client (RedisPubSubManager): An instance of the RedisPubSubManager class for pub-sub functionality.
         """
         self.chanels: dict[str,list[WebSocket]] = {}
-        self.pubsub_client = RedisPubSubManager()
+        self.pubsub_client = RedisPubSubManager(redis_connection=RedisConnect())
 
     async def add_user_to_chanel(self, chanel_id: str, websocket: WebSocket) -> None:
         """
@@ -33,9 +33,13 @@ class WebSocketManager:
         else:
             self.chanels[chanel_id] = [websocket]
 
-            await self.pubsub_client.connect()
+            # await self.pubsub_client.connect()
             pubsub_subscriber = await self.pubsub_client.subscribe(chanel_id)
             asyncio.create_task(self._pubsub_data_reader(pubsub_subscriber))
+            
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+        print("Sent a personal msg to , ", websocket)
 
     async def broadcast_to_chanel(self, chanel_id: str, message: str) -> None:
         """
