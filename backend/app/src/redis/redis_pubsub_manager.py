@@ -1,6 +1,6 @@
 import asyncio
 from redis.asyncio.client import PubSub, Redis
-from src.redis.redis_connect import RedisConnect 
+from app.src.redis.redis_connect import RedisConnect 
 
 class RedisPubSubManager:
     """

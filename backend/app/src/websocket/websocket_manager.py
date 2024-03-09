@@ -2,8 +2,8 @@ import asyncio
 
 import json
 from fastapi import WebSocket
-from src.redis.redis_pubsub_manager import RedisPubSubManager
-from src.redis.redis_connect import RedisConnect
+from app.src.redis.redis_pubsub_manager import RedisPubSubManager
+from app.src.redis.redis_connect import RedisConnect
 
 class WebSocketManager:
 

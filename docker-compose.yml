@@ -1,13 +1,30 @@
 version: '3.8'
 
-#name: iset-local
+name: my-local
 
 x-labels: &network
   networks:
-    - iset
+    - my-net
 
 services:
- 
+  main:
+    image: &main-image main-local:latest
+    build: &built-main-image
+      context: .
+      dockerfile: Dockerfile
+    container_name: main-local
+    hostname: main-local
+    restart: always
+    volumes: &main-volumes
+      - ./backend:/backend
+    depends_on:
+      - redis
+    env_file: .env
+    ports:
+      - 8080:80
+    #command: bash -c 'uvicorn app.src.main:app --host 0.0.0.0 --port 80 --reload --workers 1'
+    <<: *network
+
   redis:
     image: bitnami/redis:7.2.4
     container_name: redis-local
@@ -27,5 +44,5 @@ volumes:
     name: redis-local
 
 networks:
-  iset:
-    name: iset-local
+  my-net:
+    name: my-net
