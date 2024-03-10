@@ -1,0 +1,54 @@
+version: '3.8'
+
+name: my-local
+
+x-labels: &network
+  networks:
+    - my-net
+
+services:
+  main:
+    image: &main-image main-local:latest
+    build: &built-main-image
+      context: .
+      dockerfile: Dockerfile-debug
+    container_name: main-local
+    hostname: main-local
+    restart: always
+    volumes: &main-volumes
+      - ./backend:/backend
+    depends_on:
+      - redis
+    env_file: .env
+    ports:
+      - 8000:80
+      - 5678:5678
+    command: [
+      "bash",
+        "-c",
+        "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client
+        -m uvicorn app.src.main:app --host 0.0.0.0 --port 80 --reload --workers 1"
+      ]
+    <<: *network
+
+  redis:
+    image: bitnami/redis:7.2.4
+    container_name: redis-local
+    hostname: redis-local
+    ports:
+      - 6379:6379
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_AOF_ENABLED=no
+    volumes:
+      - redis:/bitnami/redis/data
+    <<: *network
+
+volumes:
+  redis:
+    name: redis-local
+
+networks:
+  my-net:
+    name: my-net

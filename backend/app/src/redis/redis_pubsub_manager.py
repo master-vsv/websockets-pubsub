@@ -7,35 +7,11 @@ class RedisPubSubManager:
         Initializes the RedisPubSubManager.
 
     Args:
-        host (str): Redis server host.
-        port (int): Redis server port.
+        redis_connection: RedisConnect
     """
     
     def __init__(self, redis_connection: RedisConnect):
         self.redis_connection = redis_connection
-
-    # def __init__(self, host='localhost', port=6379):
-    #     self.redis_host = host
-    #     self.redis_port = port
-    #     self.pubsub: aioredis.Redis | None = None
-        
-    # async def _get_redis_connection(self) -> aioredis.Redis:
-    #     """
-    #     Establishes a connection to Redis.
-
-    #     Returns:
-    #         aioredis.Redis: Redis connection object.
-    #     """
-    #     return aioredis.Redis(host=self.redis_host,
-    #                           port=self.redis_port,
-    #                           auto_close_connection_pool=False)
-
-    # async def connect(self) -> None:
-    #     """
-    #     Connects to the Redis server and initializes the pubsub client.
-    #     """
-    #     self.redis_connection = await self._get_redis_connection()
-    #     self.pubsub = self.redis_connection.pubsub()
 
     async def _publish(self, chanel_id: str, message: str) -> None:
         """
@@ -48,7 +24,7 @@ class RedisPubSubManager:
         redis_connection = await self.redis_connection.get_redis_connection()
         await redis_connection.publish(channel=chanel_id, message=message)
 
-    async def subscribe(self, chanel_id: str) -> Redis:
+    async def subscribe(self, chanel_id: str) -> PubSub:
         """
         Subscribes to a Redis channel.
 
@@ -59,7 +35,7 @@ class RedisPubSubManager:
             aioredis.ChannelSubscribe: PubSub object for the subscribed channel.
         """
         redis_pubsub = await self.redis_connection.get_redis_pubsub()
-        self.pubsub = await redis_pubsub.subscribe(chanel_id)
+        self.pubsub: PubSub = await redis_pubsub.subscribe(chanel_id)
         return self.pubsub
 
     async def unsubscribe(self, chanel_id: str) -> None:

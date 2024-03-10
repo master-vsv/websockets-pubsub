@@ -26,9 +26,6 @@ RUN groupadd -g ${GID} ${USER} && \
 
 USER ${USER}
 
-# RUN python -m venv .docker_venv && \
-#   . .docker_venv/bin/activate  && \
-#   pip install -q --no-cache-dir --no-python-version-warning --disable-pip-version-check -r requirements.txt
 RUN pip install -q --no-cache-dir --no-python-version-warning --disable-pip-version-check -r requirements.txt
 #HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=6 CMD curl -f "${MAIN_HEALTHCHECK_URL}"
 #RUN chmod 755 ./scripts/start-main.sh

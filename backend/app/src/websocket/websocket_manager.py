@@ -4,10 +4,12 @@ import json
 from fastapi import WebSocket
 from app.src.redis.redis_pubsub_manager import RedisPubSubManager
 from app.src.redis.redis_connect import RedisConnect
+from app.src.core.settings import settings
+from redis.asyncio.client import PubSub, Redis
 
 class WebSocketManager:
 
-    def __init__(self):
+    def __init__(self, redis_connection: RedisConnect):
         """
         Initializes the WebSocketManager.
 
@@ -16,7 +18,7 @@ class WebSocketManager:
             pubsub_client (RedisPubSubManager): An instance of the RedisPubSubManager class for pub-sub functionality.
         """
         self.chanels: dict[str,list[WebSocket]] = {}
-        self.pubsub_client = RedisPubSubManager(redis_connection=RedisConnect())
+        self.pubsub_client = RedisPubSubManager(redis_connection)
 
     async def add_user_to_chanel(self, chanel_id: str, websocket: WebSocket) -> None:
         """
@@ -32,10 +34,9 @@ class WebSocketManager:
             self.chanels[chanel_id].append(websocket)
         else:
             self.chanels[chanel_id] = [websocket]
-
-            # await self.pubsub_client.connect()
-            pubsub_subscriber = await self.pubsub_client.subscribe(chanel_id)
+            pubsub_subscriber: PubSub = await self.pubsub_client.subscribe(chanel_id)
             asyncio.create_task(self._pubsub_data_reader(pubsub_subscriber))
+        print(self.chanels)
             
     async def send_personal_message(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)
@@ -65,7 +66,7 @@ class WebSocketManager:
             del self.chanels[chanel_id]
             await self.pubsub_client.unsubscribe(chanel_id)
 
-    async def _pubsub_data_reader(self, pubsub_subscriber):
+    async def _pubsub_data_reader(self, pubsub_subscriber: PubSub):
         """
         Reads and broadcasts messages received from Redis PubSub.
 
@@ -73,7 +74,7 @@ class WebSocketManager:
             pubsub_subscriber (aioredis.ChannelSubscribe): PubSub object for the subscribed channel.
         """
         while True:
-            message = await pubsub_subscriber.get_message(ignore_subscribe_messages=True)
+            message = await pubsub_subscriber.get_message(ignore_subscribe_messages=True, timeout=0.1)
             if message is not None:
                 chanel_id = message['channel'].decode('utf-8')
                 all_sockets = self.chanels[chanel_id]

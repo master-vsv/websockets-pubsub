@@ -44,7 +44,8 @@ docker system prune
 docker system prune -a
 docker exec pg_container env
 docker exec -it main-local bash
-docker compose -f docker-compose.debug.yml up --build
+docker compose -f docker-compose-debug.yml up --build
+
 
 ## Alembic
 
