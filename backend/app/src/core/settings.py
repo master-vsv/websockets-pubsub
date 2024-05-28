@@ -2,12 +2,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """Класс настроек"""
-    DEBUG: str
+    DEBUG: str = ""
     LOG_LEVEL: str = "DEBUG"
     LOG_PATH: str = "log"
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_URL: str
+    REDIS_HOST: str = ""
+    REDIS_PORT: int = ""
+    REDIS_URL: str = ""
 
 settings = Settings()
 

@@ -42,7 +42,7 @@ def get_application() -> FastAPI:
     async def startup_event() -> None:
         # await rc.connect()
         redis_connection.is_redis_sync_available()
-        await redis_connection.is_redis_async_available()
+        redis_connection.is_redis_async_available()
         print('connect')
 
     
@@ -63,7 +63,7 @@ def get_application() -> FastAPI:
     @app.websocket("/ws/{chanel_id}/{user_id}")
     async def websocket_endpoint(websocket: WebSocket, chanel_id: str, user_id: int):
         print(chanel_id)
-        await websocket_manager.add_user_to_chanel(chanel_id, websocket)
+        await websocket_manager.add_websocket_to_chanel(chanel_id, websocket)
         message = Message(
             chanel_type=ChanelTypeEnum.system,
             user_id=user_id,
@@ -71,6 +71,7 @@ def get_application() -> FastAPI:
             message=f"User {user_id} connected to chanel - {chanel_id}"
         )
         print("!!!!!!",message.model_dump_json())
+
         await websocket_manager.broadcast_to_chanel(chanel_id, message.model_dump_json())
         
         try:

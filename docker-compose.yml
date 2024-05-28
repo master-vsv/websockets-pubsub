@@ -15,14 +15,29 @@ services:
     container_name: main-local
     hostname: main-local
     restart: always
-    volumes: &main-volumes
-      - ./backend:/backend
+    # volumes: &main-volumes
+    #   - ./backend:/backend
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      # main-init:
+      #   condition: service_completed_successfully
     env_file: .env
+    # command: bash -c 'scripts/start-main.sh'
     ports:
-      - 8080:80
+      - 8000:8000
     <<: *network
+
+  # main-init:
+  #   image: *main-image
+  #   build: *built-main-image
+  #   container_name: main-init-local
+  #   hostname: main-init-local
+  #   restart: "no"
+  #   # volumes: *main-volumes
+  #   env_file: .env
+  #   command: bash -c 'python scripts/compile.py'
+  #   <<: *network
 
   redis:
     image: bitnami/redis:7.2.4
