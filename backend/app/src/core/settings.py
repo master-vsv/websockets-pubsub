@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "DEBUG"
     LOG_PATH: str = "log"
     REDIS_HOST: str = ""
-    REDIS_PORT: int = ""
+    REDIS_PORT: int = 0
     REDIS_URL: str = ""
 
 settings = Settings()

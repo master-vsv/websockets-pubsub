@@ -13,6 +13,7 @@ venv\Scripts\deactivate
 pip freeze > backend/requirements.txt
 pip install -r backend/requirements.txt
 pip uninstall -r requirements.txt -y
+pip download -r requirements.txt -d path_to_the_folder
 
 ## Git
 git reset --hard HEAD       (going back to HEAD)
@@ -45,6 +46,7 @@ docker system prune -a
 docker exec pg_container env
 docker exec -it main-local bash
 docker compose -f docker-compose-debug.yml up --build
+
 
 
 ## Alembic

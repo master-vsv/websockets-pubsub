@@ -9,7 +9,8 @@ ARG GID=1002
 ARG MAIN_VERSION
 ENV MAIN_VERSION=${MAIN_VERSION}
 
-RUN apt update -qq && apt install -yqq curl && apt-get clean 
+RUN apt update -qq && apt install -yqq curl && apt-get clean
+RUN apt-get install -qq build-essential python3-dev
 # && apt install libc6
 ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
@@ -37,6 +38,7 @@ USER ${USER}
 
 RUN pip install -q --no-cache-dir --no-python-version-warning --disable-pip-version-check -r requirements.txt
 RUN pip install -q --no-cache-dir --no-python-version-warning --disable-pip-version-check nuitka
+# RUN pip install -q --no-cache-dir --no-python-version-warning --disable-pip-version-check Cython
 
 # RUN sudo apt-get install python3-dev
 #HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=6 CMD curl -f "${MAIN_HEALTHCHECK_URL}"
