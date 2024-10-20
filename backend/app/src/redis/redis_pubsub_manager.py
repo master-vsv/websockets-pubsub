@@ -1,6 +1,8 @@
 import asyncio
-from redis.asyncio.client import PubSub, Redis
-from app.src.redis.redis_connect import RedisConnect 
+# from redis.asyncio.client import PubSub, Redis
+from app.src.redis.redis_connect import RedisConnect
+from app.src.core.logging import logger
+from aioredis.client import PubSub
 
 class RedisPubSubManager:
     """
@@ -11,6 +13,7 @@ class RedisPubSubManager:
     
     def __init__(self, redis_connection: RedisConnect):
         self.redis_connection = redis_connection
+        logger.info("Created RedisPubSubManager")
 
     async def _publish(self, chanel_id: str, message: str) -> None:
         """
@@ -21,6 +24,7 @@ class RedisPubSubManager:
         """
         redis_connection = await self.redis_connection.get_redis_connection()
         await redis_connection.publish(channel=chanel_id, message=message)
+        logger.info(f"RedisPubSubManager publish message {message} to chanel_id {chanel_id}")
 
     async def subscribe(self, chanel_id: str) -> PubSub:
         """
@@ -31,12 +35,11 @@ class RedisPubSubManager:
             aioredis.ChannelSubscribe: PubSub object для работы с подписками на канал.
         """
         
-        # redis_pubsub = await self.redis_connection.get_redis_pubsub()
-        async with (await self.redis_connection._get_async_redis_connection()).pubsub() as pubsub:
-            print(pubsub.connection)
-            print(pubsub.channels)
-            self.pubsub: PubSub = await pubsub.subscribe(chanel_id)
-        return self.pubsub
+        redis_pubsub = await self.redis_connection.get_redis_pubsub()
+        await redis_pubsub.subscribe(chanel_id)
+            
+        logger.info(f"RedisPubSubManager subscribe to chanel_id {chanel_id} redis_pubsub.channels {redis_pubsub.channels}")
+        return redis_pubsub
 
     async def unsubscribe(self, chanel_id: str) -> None:
         """
@@ -47,3 +50,4 @@ class RedisPubSubManager:
         """
         redis_pubsub = await self.redis_connection.get_redis_pubsub()
         await redis_pubsub.unsubscribe(chanel_id)
+        logger.info(f"RedisPubSubManager unsubscribe from chanel_id {chanel_id} pubsub.channels {redis_pubsub.channels}")

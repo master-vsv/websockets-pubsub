@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     LOG_PATH: str = "log"
     REDIS_HOST: str = ""
     REDIS_PORT: int = 0
-    REDIS_URL: str = ""
+    REDIS_URL: str = "redis://redis-test:6379"
+    PROJECT_NAME: str = "WEBSOCKET"
 
 settings = Settings()
 

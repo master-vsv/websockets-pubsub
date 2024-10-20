@@ -12,11 +12,11 @@ services:
     build: &built-main-image
       context: .
       dockerfile: Dockerfile
-    container_name: main-local
-    hostname: main-local
+    container_name: main-test
+    hostname: main-test
     restart: always
-    # volumes: &main-volumes
-    #   - ./backend:/backend
+    volumes: &main-volumes
+      - ./backend:/backend
     depends_on:
       redis:
         condition: service_started
@@ -41,8 +41,8 @@ services:
 
   redis:
     image: bitnami/redis:7.2.4
-    container_name: redis-local
-    hostname: redis-local
+    container_name: redis-test
+    hostname: redis-test
     ports:
       - 6379:6379
     restart: always
@@ -55,7 +55,7 @@ services:
 
 volumes:
   redis:
-    name: redis-local
+    name: redis-test
 
 networks:
   my-net:
